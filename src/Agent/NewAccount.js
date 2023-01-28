@@ -1,38 +1,59 @@
-import { InfoCircleOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Checkbox, Row, Col, Select, message } from 'antd';
+import { Button, Form, Input, Select, InputNumber, Row, Col, message } from 'antd';
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const NewAccount = () => {
 
     const [form] = Form.useForm();
+    const [sexe, setSexe] = useState()
     const [nom, setNom] = useState()
-    const [ville, setVille] = useState()
-    const [adresse, setAdresse] = useState()
+    const [prenom, setPrenom] = useState()
+    const [fullname, setFullname] = useState()
     const [tele, setTele] = useState()
-    const [statut, setStatut] = useState(false)
+    const [email, setEmail] = useState("")
+    const [solde, setSolde] = useState()
+    const [numCompte, setNumCompte] = useState()
+
+    useEffect(() => {
+        generateNumCard()
+    }, [])
+
+    const generateNumCard = () => {
+        let num = ""
+        for (let i = 0; i < 16; i++) {
+            num += Math.floor(Math.random() * (9 - 0 + 1)) + 0;
+        }
+
+        setNumCompte(num)
+    }
+
+    const onHandleChangeSexe = (value) => {
+        setSexe(value)
+    }
 
     const onHandleChangeNom = (e) => {
         setNom(e.target.value)
 
     }
 
-    const onHandleChangeVille = (value) => {
-        setVille(value)
+    const onHandleChangePrenom = (e) => {
+        setPrenom(e.target.value)
 
     }
-    const onHandleChangeAdresse = (e) => {
-        setAdresse(e.target.value)
 
-    }
 
     const onHandleChangeTele = (e) => {
         setTele(e.target.value)
 
     }
 
-    const onHandleChangeStatut = (e) => {
-        setStatut(!statut)
+    const onHandleChangeEmail = (e) => {
+        setEmail(e.target.value)
+
+    }
+
+    const onHandleChangeSolde = (value) => {
+        setSolde(value)
 
     }
 
@@ -48,41 +69,35 @@ const NewAccount = () => {
 
     const error = () => {
         messageApi.open({
-          type: 'error',
-          content: 'This is an error message',
+            type: 'error',
+            content: 'This is an error message',
         });
-      };
+    };
 
     //submit
-    const onSubmitForm = (e) => {
-        let agence = {
-            nomAgence: nom,
-            villeAgence: ville,
-            adresseAgence: adresse,
-            telephoneAgence: tele,
-            active: statut
+    const onSubmitForm = async (e) => {
+
+        await setFullname(nom + ' ' + prenom)
+
+
+        const client = {
+            fullname,
+            email,
+            'gsm': tele,
+            'titre': sexe,
+            solde
         }
 
-                
+        axios.post("http:/", client)
+            .then(res => success())
+            .catch(err => error())
 
-        /*
-            axios.port('http:',agence)
-            .then((res)=>success())
-            .catch(err=>error())
-
-        
-        */
-
-
+        console.log(client)
 
     }
 
     const reset = () => {
-        setNom("")
-        setVille("")
-        setAdresse("")
-        setTele("")
-        setStatut(false)
+
     }
 
     return (
@@ -98,83 +113,72 @@ const NewAccount = () => {
 
                 <Row>
                     <Col span={9} >
-                        <Form.Item label="Nom d'agene" required tooltip="This is a required field">
-                            <Input placeholder="" value={nom} onChange={onHandleChangeNom} />
-                        </Form.Item>
+                        <h1>Infos Client</h1>
 
-                    </Col>
-                    <Col span={9} offset={2}>
-
-                        <Form.Item
-                            label="Adresse"
-                            required
-                            tooltip={{
-                                title: 'Tooltip with customize icon',
-                                icon: <InfoCircleOutlined />,
-                            }}
-                        >
-                            <Input placeholder="" value={adresse} onChange={onHandleChangeAdresse} />
-                        </Form.Item>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col span={9} >
-                        <Form.Item label="Ville" required tooltip="This is a required field">
+                        <Form.Item label="Sexe" required tooltip="This is a required field">
                             <Select
+
                                 showSearch
-                                placeholder="Choisissez une Ville"
+                                placeholder="Mr/Mme/Mlle"
                                 optionFilterProp="children"
-                                onChange={onHandleChangeVille}
+                                onChange={onHandleChangeSexe}
                                 filterOption={(input, option) =>
                                     (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                                 }
                                 options={[
                                     {
-                                        value: 'Safi',
-                                        label: 'Safi',
+                                        value: 'Mr',
+                                        label: 'Mr',
                                     },
                                     {
-                                        value: 'Marrakech',
-                                        label: 'Marrakech',
+                                        value: 'Mme',
+                                        label: 'Mme',
                                     },
                                     {
-                                        value: 'Agadir',
-                                        label: 'Agadir',
+                                        value: 'Mlle',
+                                        label: 'Mlle',
                                     },
-                                    {
-                                        value: 'Casablanca',
-                                        label: 'Casablanca',
-                                    },
-                                    {
-                                        value: 'Khnifra',
-                                        label: 'Khnifra',
-                                    },
-                                    {
-                                        value: 'Teznit',
-                                        label: 'Teznit',
-                                    }
+
                                 ]}
                             />
                         </Form.Item>
-                        <Form.Item label="Téléphone" required tooltip="This is a required field">
-                            <Input placeholder="input placeholder" value={tele} onChange={onHandleChangeTele} />
+
+                        <Form.Item label="Nom" required tooltip="This is a required field">
+                            <Input placeholder="" value={nom} onChange={onHandleChangeNom} />
                         </Form.Item>
+
+                        <Form.Item label="Prénom" required tooltip="This is a required field">
+                            <Input placeholder="" value={prenom} onChange={onHandleChangePrenom} />
+                        </Form.Item>
+
+                        <Form.Item label="email" required tooltip="This is a required field">
+                            <Input placeholder="" value={email} onChange={onHandleChangeEmail} />
+                        </Form.Item>
+
+                        <Form.Item label="Téléphone" required tooltip="This is a required field">
+                            <Input placeholder="" value={tele} onChange={onHandleChangeTele} />
+                        </Form.Item>
+
 
                     </Col>
                     <Col span={9} offset={2}>
+                        <h1>Info Compte</h1>
 
-                        <Form.Item
-                            label="Statut"
-                            tooltip={{
-                                title: 'Tooltip with customize icon',
-                                icon: <InfoCircleOutlined />,
-                            }}
-                        >
-                            <Checkbox onChange={onHandleChangeStatut} >Active</Checkbox>
+                        <Form.Item label="Numéro Compte" required tooltip="This is a required field">
+                            <Input value={numCompte} readOnly />
                         </Form.Item>
+                        
+                        <Form.Item label="Solde Initial" required tooltip="This is a required field">
+
+                            <InputNumber
+                                prefix="MAD"
+                                onChange={onHandleChangeSolde}
+                                style={{ width: '100%' }}
+                            />
+                        </Form.Item>
+
                     </Col>
                 </Row>
-
 
 
                 <Form.Item>

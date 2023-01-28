@@ -10,6 +10,7 @@ import Agents from "./pages/Agents";
 import MainAgent from "./Agent/MainAgent";
 import NewAccount from "./Agent/NewAccount";
 import Accounts from "./Agent/Accounts";
+import FormTransfert from "./Agent/FormTransfert";
 
 const App = () => {
 
@@ -32,6 +33,7 @@ const App = () => {
           
           <Route path="CreateAccount" element={<NewAccount />} />
           <Route path="listAccount" element={<Accounts />} />
+          <Route path="transfert" element={<FormTransfert />} />
 
         </Route>
 

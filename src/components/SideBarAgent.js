@@ -23,7 +23,7 @@ const items = [
     ]),
     
     getItem('Transferts', 'sub2', <SwapOutlined />, [
-        getItem(<Link to="CreateAccount" >Nouveau</Link>, '8'), 
+        getItem(<Link to="transfert" >Nouveau</Link>, '8'), 
         getItem(<Link to="ListAccount" >Historique</Link>, '9')
       ]),
   ];
