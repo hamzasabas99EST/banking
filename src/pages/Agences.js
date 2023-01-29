@@ -1,28 +1,17 @@
 import { SearchOutlined } from '@ant-design/icons';
-import { Button, Input, Space, Table } from 'antd';
+import { Button, Input, Space, Table, Tag } from 'antd';
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import Highlighter from 'react-highlight-words';
 
 
 
-const data = [
-    {}
-];
+
 
 const Agences = () => {
 
     //state agences
-    const [agences, setAgences] = useState([
-        {
-            key: 'agence.id',
-            nom: 'agence.nom',
-            ville: 'agence.villeAgence',
-            addresse: 'agence.adresseAgence',
-            tele: 'agence.telephoneAgence',
-            statut: 'agence.active'
-        }
-    ])
+    const [agences, setAgences] = useState([])
 
     //Searche
     const [searchText, setSearchText] = useState('');
@@ -35,7 +24,7 @@ const Agences = () => {
 
     //get agences
     const getAgences = () => {
-        axios.get("http://localhost:/")
+        axios.get("http://localhost:8080/agence")
             .then(res => setAgences(res.data))
             .catch(err => console.log(err))
     }
@@ -147,6 +136,13 @@ const Agences = () => {
     });
     const columns = [
         {
+            title: '#ID',
+            dataIndex: 'id',
+            key: 'id',
+            width: '20%',
+            ...getColumnSearchProps('id'),
+        },
+        {
             title: 'Nom',
             dataIndex: 'nom',
             key: 'nom',
@@ -164,6 +160,7 @@ const Agences = () => {
             title: 'Addresse',
             dataIndex: 'addresse',
             key: 'addresse',
+            width:'40%',
             ...getColumnSearchProps('addresse'),
             sorter: (a, b) => a.address.length - b.address.length,
             sortDirections: ['descend', 'ascend'],
@@ -181,11 +178,27 @@ const Agences = () => {
             key: 'statut',
             width: '20%',
             ...getColumnSearchProps('statut'),
+            render: (_, record) => (
+                <Tag size="middle" color={record.active ? "green":"volcano"}>
+                    {record.active ? "active":"no active"}
+                </Tag>
+            ),
+
         },
 
     ];
-    return <Table columns={columns} 
-        dataSource={agences}
+    return <Table columns={columns}
+        dataSource={agences.map(agence => ({
+
+            key: agence.id,
+            id:agence.id,
+            nom: agence.nomAgence,
+            ville: agence.villeAgence,
+            addresse: agence.adresseAgence,
+            tele: agence.telephoneAgence,
+            statut: agence.active
+
+        }))}
     />;
 
 
